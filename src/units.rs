@@ -75,7 +75,7 @@ impl AspectRatio {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum LengthValue {
     Px(f32),
     Percentage(f32),
@@ -153,6 +153,14 @@ impl LengthValue {
 
         Ok(value)
     }
+
+    pub fn default_spacing() -> LengthValue {
+        LengthValue::Px(8.0)
+    }
+
+    pub fn default_delay() -> u32 {
+        100
+    }
 }
 
 impl FromStr for LengthValue {
@@ -163,9 +171,15 @@ impl FromStr for LengthValue {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Copy, Deserialize)]
 #[serde(transparent)]
 pub struct Margin(pub LengthValue);
+
+impl Default for Margin {
+    fn default() -> Self {
+        Margin(LengthValue::Percentage(0.2))
+    }
+}
 
 impl FromStr for Margin {
     type Err = miette::Report;
@@ -174,5 +188,38 @@ impl FromStr for Margin {
         LengthValue::from_str(val)
             .map(Margin)
             .map_err(|e| miette!("Margin parse error: {:?}", e))
+    }
+}
+
+impl Margin {
+    pub fn to_i32(&self, viewport: (f32, f32), dimension: LengthDimension) -> i32 {
+        let arg = LengthArgs {
+            viewport,
+            dimension,
+        };
+        self.0.for_args(&arg) as i32
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, Deserialize)]
+pub struct Margins {
+    #[serde(default)]
+    pub top: Margin,
+    #[serde(default)]
+    pub right: Margin,
+    #[serde(default)]
+    pub bottom: Margin,
+    #[serde(default)]
+    pub left: Margin,
+}
+
+impl Margins {
+    pub fn all(margin: Margin) -> Self {
+        Self {
+            top: margin,
+            right: margin,
+            bottom: margin,
+            left: margin,
+        }
     }
 }

@@ -50,43 +50,43 @@ The `<Esc>` key closes the menu, an option to change this may be added eventuall
 
 **wleave** is backwards-compatible with **wlogout** configuration files.
 
-Since **version 0.6.0**, *full JSON configuration* can be used in place of the `wlogout`-based
+Since **version 0.6.0**, _full JSON configuration_ can be used in place of the `wlogout`-based
 configuration. The default configuration file can be copied from `/etc/wleave/layout.json`.
 The new configuration system is more flexible as it removes the need for extra command-line
 arguments.
 
 From `man 5 wleave.json`, the allowed top-level options are:
 
-* `"buttons"` **(array)** - a list of buttons
-* `"css"` **(string)** - Specify a custom CSS file instead of the default one
-* `"service": false` **(boolean)**
+- `"buttons"` **(array)** - a list of buttons
+- `"css"` **(string)** - Specify a custom CSS file instead of the default one
+- `"service": false` **(boolean)**
   Run the application as a service, with all instances of wleave opening this one. Allows faster startup at the
   cost of running in the background
-* `"button-layout": "grid"` Specify the way buttons should be laid out.
+- `"button-layout": "grid"` Specify the way buttons should be laid out.
   See [dynamic layouts](#dynamic-layouts-supsince-070sup) for more details.
-* `"buttons-per-row": "3"` **(string)** Set the number of buttons per row, or use a fraction to specify the number
+- `"buttons-per-row": "3"` **(string)** Set the number of buttons per row, or use a fraction to specify the number
   of rows to be used (e.g. "1/1" for all buttons in a single row, "1/5" to distribute the buttons over 5 rows)
-* `"column-spacing": "8px"` **(number / "#px" / "#%")** Set space between buttons columns
-* `"row-spacing": "8px"` **(number / "#px" / "#%")** Set space between buttons rows
-* `"margin": "20%"` **(number / "#px" / "#%")** Set margin on all sides
-* `"margin-left"` **(number / "#px" / "#%")** Set margin for left of buttons. Falls back to the value set by *margin*
-* `"margin-right"` **(number / "#px" / "#%")** Set margin for right of buttons. Falls back to the value set by
-  *margin*
-* `"margin-top"` **(number / "#px" / "#%")** Set margin for top of buttons. Falls back to the value set by *margin*
-* `"margin-bottom"` **(number / "#px" / "#%")** Set margin for bottom of buttons. Falls back to the value set by
-  *margin*
-* `"button-aspect-ratio"` **(string or number)** Set the aspect ratio of the buttons, either as a float (as a number or
+- `"column-spacing": "8px"` **(number / "#px" / "#%")** Set space between buttons columns
+- `"row-spacing": "8px"` **(number / "#px" / "#%")** Set space between buttons rows
+- `"margin": "20%"` **(number / "#px" / "#%")** Set margin on all sides
+- `"margin-left"` **(number / "#px" / "#%")** Set margin for left of buttons. Falls back to the value set by _margin_
+- `"margin-right"` **(number / "#px" / "#%")** Set margin for right of buttons. Falls back to the value set by
+  _margin_
+- `"margin-top"` **(number / "#px" / "#%")** Set margin for top of buttons. Falls back to the value set by _margin_
+- `"margin-bottom"` **(number / "#px" / "#%")** Set margin for bottom of buttons. Falls back to the value set by
+  _margin_
+- `"button-aspect-ratio"` **(string or number)** Set the aspect ratio of the buttons, either as a float (as a number or
   string) or a ratio (e.g. "5/4"). If unspecified, the buttons fill all available space between the margins.
-* `"close-on-lost-focus": false` **(boolean)** Closes the menu if focus is lost
-* `"show-keybinds": false`: **(boolean)** Show the associated key binds for each button
-* `"protocol": "layer-shell"` (**"layer-shell"**/**"xdg"**/**"none"**) Backend to use for full-screening the menu
-* `"no-version-info": false` **(boolean)** Hides the version label.
-* `"delay-command-ms": 100` **(number)** The number of milliseconds to wait after an action before the associated
+- `"close-on-lost-focus": false` **(boolean)** Closes the menu if focus is lost
+- `"show-keybinds": false`: **(boolean)** Show the associated key binds for each button
+- `"protocol": "layer-shell"` (**"layer-shell"**/**"xdg"**/**"none"**) Backend to use for full-screening the menu
+- `"no-version-info": false` **(boolean)** Hides the version label.
+- `"delay-command-ms": 100` **(number)** The number of milliseconds to wait after an action before the associated
   command is executed
 
 The command-line option counterparts of these options take precedence over the configuration file.
 
-*Example configuration* with one button that executes `swaylock` on click:
+_Example configuration_ with one button that executes `swaylock` on click:
 
 ```json
 {
@@ -107,7 +107,7 @@ The command-line option counterparts of these options take precedence over the c
 }
 ```
 
-Layout files may also be read from *stdin* with `--layout -`.
+Layout files may also be read from _stdin_ with `--layout -`.
 For example, with `jq`, buttons can be picked out:
 
 ```shell
@@ -187,50 +187,9 @@ The stylesheet in `/etc/wleave/style.css` is fully customizable and can be edite
 SVG icons are dynamically recolored if possible. <small>(since 0.6.2)</small>
 
 Each button has an identifier set in the layout file, which allows custom-styling each button
-one-by-one. Icon colors may be changed by modifying the CSS variable `--view-fg-color`,
-or by setting a custom `color` property entirely.
+one-by-one. Icon colors may be changed by targeting the `button icon` selector in your CSS and modifying the `color` property.
 
-### Example recipe
-
-Example stylesheet that makes the selected icon colored with the `libadwaita` accent color:
-
-```css
-window {
-    background-color: rgba(12, 12, 12, 0.8);
-}
-
-button {
-    color: var(--view-fg-color);
-    background-color: var(--view-bg-color);
-    border: none;
-    padding: 10px;
-}
-
-button label.action-name {
-    font-size: 24px;
-}
-
-button label.keybind {
-    font-size: 20px;
-    font-family: monospace;
-}
-
-button:hover label.keybind, button:focus label.keybind {
-    opacity: 1;
-}
-
-button:hover,
-button:focus {
-    color: var(--accent-color);
-    background-color: var(--window-bg-color);
-}
-
-button:active {
-    color: var(--accent-fg-color);
-    background-color: var(--accent-bg-color);
-}
-
-```
+See [`style.css`](data/style.css) for an example.
 
 ## Keybinds reference
 

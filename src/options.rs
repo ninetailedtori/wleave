@@ -1,6 +1,7 @@
-use crate::units::{AspectRatio, LengthValue, Margin};
+use crate::units::{AspectRatio, LengthValue, Margin, Margins};
 use clap::{ArgAction, Parser, ValueEnum};
 use serde::{Deserialize, Deserializer};
+use std::convert::Infallible;
 use std::{
     error::Error,
     fmt::{Debug, Display},
@@ -23,6 +24,75 @@ pub enum Protocol {
 pub enum MenuLayoutStrategy {
     #[default]
     Grid,
+}
+
+#[derive(Debug, Default, Clone, Copy)]
+pub enum WButtonJustify {
+    #[default]
+    Center,
+    Fill,
+    Left,
+    Right,
+}
+
+impl<'de> Deserialize<'de> for WButtonJustify {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        Ok(FromStr::from_str(<&str>::deserialize(deserializer)?).expect("never fails"))
+    }
+}
+
+impl From<WButtonJustify> for gtk4::Justification {
+    fn from(justify: WButtonJustify) -> Self {
+        match justify {
+            WButtonJustify::Center => gtk4::Justification::Center,
+            WButtonJustify::Fill => gtk4::Justification::Fill,
+            WButtonJustify::Left => gtk4::Justification::Left,
+            WButtonJustify::Right => gtk4::Justification::Right,
+        }
+    }
+}
+
+impl FromStr for WButtonJustify {
+    type Err = Infallible;
+
+    fn from_str(val: &str) -> Result<Self, Self::Err> {
+        Ok(match val {
+            "center" => WButtonJustify::Center,
+            "fill" => WButtonJustify::Fill,
+            "left" => WButtonJustify::Left,
+            "right" => WButtonJustify::Right,
+            _ => WButtonJustify::Center,
+        })
+    }
+}
+
+#[derive(Debug, Clone, Default, Deserialize)]
+pub struct ButtonState {
+    #[serde(default)]
+    pub label: String,
+    #[serde(default)]
+    pub justify: WButtonJustify,
+    #[serde(default)]
+    pub margins: Margins,
+    #[serde(default)]
+    pub width: Option<f32>,
+    #[serde(default)]
+    pub height: Option<f32>,
+}
+
+#[derive(Debug, Default, Clone, Deserialize)]
+pub struct ButtonStates {
+    #[serde(default)]
+    pub default: ButtonState,
+    #[serde(default)]
+    pub hover: Option<ButtonState>,
+    #[serde(default)]
+    pub active: Option<ButtonState>,
+    #[serde(default)]
+    pub focus: Option<ButtonState>,
 }
 
 #[derive(Parser, Debug)]

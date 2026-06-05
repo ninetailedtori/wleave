@@ -1,0 +1,161 @@
+/**
+ * See https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/css-variables.html for more CSS variables.
+ * Or use your own colors. Both work, but using your own colors may break the automatic light/dark theme function.
+ */
+
+window {
+  /* Text */
+  --text-default: #e0e0e0;
+  --text-dimmed: #909090;
+
+  /* Links */
+  --link-default: #5eb3f6;
+  --link-hover: #76bff8;
+  --link-focus: #91cffe;
+  --link-active: #a2d5ff;
+
+  /* Icons */
+  --icon-default: #b0b0b0;
+  --icon-hover: #e0e0e0;
+  --icon-active: #ffffff;
+
+  /* Accents */
+  --accent: #ff7ba8;
+  --accent-hover: #ff94ba;
+  --accent-active: #ffb3d0;
+
+  /* Buttons */
+  --button-bg: rgba(255, 255, 255, 0.06);
+  --button-bg-hover: rgba(255, 255, 255, 0.12);
+  --button-bg-active: rgba(255, 255, 255, 0.18);
+
+  /* Surface */
+  --overlay: rgba(0, 0, 0, 0.9);
+
+  background-color: var(--overlay);
+}
+
+button {
+  background-color: var(--button-bg);
+  border: none;
+  padding: 10px;
+  transition: all 150ms ease-out;
+}
+
+button .icon {
+  color: var(--icon-default);
+  transition: color 150ms ease-out;
+}
+
+label {
+  color: var(--text-default);
+}
+
+label a {
+  color: var(--link-default);
+}
+
+label a:hover {
+  color: var(--link-hover);
+}
+
+label a:focus {
+  color: var(--link-focus);
+}
+
+label a:active {
+  color: var(--link-active);
+}
+
+button label.action-name {
+  font-size: 24px;
+}
+
+button label.keybind {
+  font-size: 20px;
+  font-family: monospace;
+  transition: color 150ms ease-out;
+}
+
+button label.dimmed {
+  color: var(--text-dimmed);
+}
+
+button:hover,
+button:focus {
+  background-color: var(--button-bg-hover);
+}
+
+button:hover .icon,
+button:focus .icon {
+  color: var(--icon-hover);
+}
+
+button:hover label.keybind,
+button:focus label.keybind {
+  color: var(--text-dimmed);
+  font-weight: 600;
+}
+
+button:active {
+  background-color: var(--button-bg-active);
+}
+
+button:active .icon {
+  color: var(--icon-active);
+}
+
+/* Power action buttons */
+button#shutdown .icon {
+  color: #ff7070;
+}
+
+button#shutdown:hover .icon,
+button#shutdown:focus .icon {
+  color: #ff9090;
+}
+
+button#hibernate .icon {
+  color: #8fb3ff;
+}
+
+button#hibernate:hover .icon,
+button#hibernate:focus .icon {
+  color: #a8c5ff;
+}
+
+button#reboot .icon {
+  color: #6fff8f;
+}
+
+button#reboot:hover .icon,
+button#reboot:focus .icon {
+  color: #88ffaa;
+}
+
+button#lock .icon {
+  color: #ffd97d;
+}
+
+button#lock:hover .icon,
+button#lock:focus .icon {
+  color: #ffe5a0;
+}
+
+button#logout .icon {
+  color: #ffb88f;
+}
+
+button#logout:hover .icon,
+button#logout:focus .icon {
+  color: #ffc9a8;
+}
+
+button#suspend .icon {
+  color: #c89fff;
+}
+
+button#suspend:hover .icon,
+button#suspend:focus .icon {
+  color: #d9b8ff;
+}

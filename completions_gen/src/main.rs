@@ -3,7 +3,7 @@ use clap_complete::{generate_to, shells};
 use std::env;
 use std::io::Error;
 
-use wleave::cli_opt::Args;
+use wleave::options::Args;
 
 fn main() -> Result<(), Error> {
     let outdir = match env::var_os("OUT_DIR") {

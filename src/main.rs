@@ -18,7 +18,7 @@ use crate::app::create_app;
 use crate::config::{AppConfig, load_config, load_css, merge_with_args};
 use gtk4::gdk::Display;
 use gtk4::prelude::*;
-use wleave::cli_opt::Args;
+use wleave::options::Args;
 
 fn on_startup(config: &AppConfig) {
     let display = Display::default().expect("Could not connect to a display");
@@ -45,7 +45,7 @@ fn entry_point(config: Arc<AppConfig>) -> miette::Result<()> {
     app.connect_startup(clone!(
         #[strong]
         config,
-        move |_| on_startup(config.as_ref())
+        move |_| on_startup(&config)
     ));
 
     let hold_guard = if config.service {

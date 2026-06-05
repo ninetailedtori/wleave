@@ -9,8 +9,8 @@ use std::borrow::Cow;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use tracing::{Level, debug, enabled, error, info, warn};
-use wleave::cli_opt::{Args, ButtonLayout, MenuLayoutStrategy, Protocol};
-use wleave::units::{AspectRatio, LengthValue, Margin};
+use wleave::options::{Args, ButtonLayout, MenuLayoutStrategy, Protocol};
+use wleave::units::{AspectRatio, LengthValue, Margins};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "kebab-case")]
@@ -19,18 +19,14 @@ pub struct AppConfig {
     pub service: bool,
     #[serde(default)]
     pub button_layout: MenuLayoutStrategy,
-    pub margin_left: Option<Margin>,
-    pub margin_right: Option<Margin>,
-    pub margin_top: Option<Margin>,
-    pub margin_bottom: Option<Margin>,
-    #[serde(default = "default_margin")]
-    pub margin: Margin,
-    #[serde(default = "default_spacing")]
+    #[serde(default)]
+    pub margins: Margins, // This margin is for window, not buttons (that lives in WButton's schema).
+    #[serde(default = "LengthValue::default_spacing")]
     pub column_spacing: LengthValue,
-    #[serde(default = "default_spacing")]
+    #[serde(default = "LengthValue::default_spacing")]
     pub row_spacing: LengthValue,
     pub button_aspect_ratio: Option<AspectRatio>,
-    #[serde(default = "default_delay")]
+    #[serde(default = "LengthValue::default_delay")]
     pub delay_command_ms: u32,
     #[serde(default)]
     pub protocol: Protocol,
@@ -51,15 +47,11 @@ impl Default for AppConfig {
         AppConfig {
             service: false,
             button_layout: MenuLayoutStrategy::Grid,
-            margin_left: None,
-            margin_right: None,
-            margin_top: None,
-            margin_bottom: None,
-            margin: default_margin(),
-            column_spacing: default_spacing(),
-            row_spacing: default_spacing(),
+            margins: Default::default(),
+            column_spacing: LengthValue::default_spacing(),
+            row_spacing: LengthValue::default_spacing(),
             button_aspect_ratio: None,
-            delay_command_ms: default_delay(),
+            delay_command_ms: LengthValue::default_delay(),
             protocol: Default::default(),
             buttons_per_row: Default::default(),
             close_on_lost_focus: false,
@@ -69,18 +61,6 @@ impl Default for AppConfig {
             css: None,
         }
     }
-}
-
-fn default_margin() -> Margin {
-    Margin(LengthValue::Percentage(0.2))
-}
-
-fn default_spacing() -> LengthValue {
-    LengthValue::Px(8.0)
-}
-
-fn default_delay() -> u32 {
-    100
 }
 
 fn file_search_given(given_file: impl AsRef<Path>) -> Result<PathBuf, WError> {
@@ -224,15 +204,9 @@ macro_rules! merge_option {
 pub fn merge_with_args(config: &mut AppConfig, args: Args) {
     merge_option!(config, args, service);
     merge_option!(config, args, button_layout);
-    merge_option!(config, args, margin_top => Some(margin_top));
-    merge_option!(config, args, margin_bottom => Some(margin_bottom));
-    merge_option!(config, args, margin_left => Some(margin_left));
-    merge_option!(config, args, margin_right => Some(margin_right));
-    merge_option!(config, args, margin);
     merge_option!(config, args, protocol);
     merge_option!(config, args, column_spacing);
     merge_option!(config, args, row_spacing);
-    merge_option!(config, args, button_aspect_ratio => Some(button_aspect_ratio));
     merge_option!(config, args, show_keybinds);
     merge_option!(config, args, close_on_lost_focus);
     merge_option!(config, args, buttons_per_row);

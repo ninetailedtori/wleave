@@ -1,2 +1,2 @@
-pub mod cli_opt;
+pub mod options;
 pub mod units;

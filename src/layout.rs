@@ -4,7 +4,7 @@ use glib::object::Cast;
 use glib::subclass::types::ObjectSubclassIsExt;
 use gtk4::prelude::{LayoutManagerExt, WidgetExt};
 use libadwaita::gtk;
-use wleave::cli_opt::MenuLayoutStrategy;
+use wleave::options::MenuLayoutStrategy;
 
 mod menu_layout_child {
     use gdk4::prelude::ObjectExt;
@@ -119,26 +119,25 @@ mod menu_layout {
     #[glib::derived_properties]
     impl ObjectImpl for LayoutMenuImpl {}
 
+    fn collect_widgets(mut curr: Option<gtk4::Widget>) -> Vec<gtk4::Widget> {
+        std::iter::from_fn(|| {
+            let it = curr.take()?;
+            curr = it.next_sibling();
+            Some(it)
+        })
+        .collect()
+    }
+
     impl LayoutManagerImpl for LayoutMenuImpl {
         #[instrument(skip(self, widget))]
         fn allocate(&self, widget: &gtk4::Widget, width: i32, height: i32, baseline: i32) {
-            {
-                let mut layout = self.layout_strategy.borrow_mut();
+            let mut layout = self.layout_strategy.borrow_mut();
 
-                layout.column_spacing = self.column_spacing.get();
-                layout.row_spacing = self.row_spacing.get();
-                layout.aspect_ratio = self.aspect_ratio_set.get().then(|| self.aspect_ratio.get());
-            }
+            layout.column_spacing = self.column_spacing.get();
+            layout.row_spacing = self.row_spacing.get();
+            layout.aspect_ratio = self.aspect_ratio_set.get().then(|| self.aspect_ratio.get());
 
-            let layout = self.layout_strategy.borrow();
-
-            let mut curr = widget.first_child();
-            let children = std::iter::from_fn(|| {
-                let it = curr.take()?;
-                curr = it.next_sibling();
-                Some(it)
-            })
-            .collect::<Vec<_>>();
+            let children = collect_widgets(widget.first_child());
 
             layout.allocate(&self.obj(), &children, width, height, baseline);
         }
@@ -173,14 +172,7 @@ mod menu_layout {
             orientation: gtk4::Orientation,
             for_size: i32,
         ) -> (i32, i32, i32, i32) {
-            let mut curr = widget.first_child();
-            let children = std::iter::from_fn(|| {
-                let it = curr.take()?;
-                curr = it.next_sibling();
-                Some(it)
-            })
-            .collect::<Vec<_>>();
-
+            let children = collect_widgets(widget.first_child());
             let layout = self.layout_strategy.borrow();
 
             layout.measure(&self.obj(), &children, orientation, for_size)
